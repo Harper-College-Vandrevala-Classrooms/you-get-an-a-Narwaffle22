@@ -42,6 +42,7 @@ void Student::setGrade(int newGrade) {
 class Assingment {
 public:
 	Assingment(string, int);
+	Assingment();
 	string getName();
 	int getPoints();
 private:
@@ -52,6 +53,7 @@ Assingment::Assingment(string name, int pntsPoss) {
 	this->name = name;
 	this->pntsPoss = pntsPoss;
 }
+Assingment::Assingment() {}
 string Assingment::getName() {
 	return name;
 }
@@ -66,6 +68,8 @@ public:
 	Gradebook();
 	void addStudent(string, string);
 	void addAssingment(string, int);
+	void grade(string, int, int);
+	void grade(string, string, int);
 private:
 	vector<Student> students;
 	vector<int> stuIDs;
@@ -75,6 +79,7 @@ private:
 Gradebook::Gradebook() {}
 void Gradebook::addStudent(string firstname, string lastname) {
 	int id = randID();
+	cout << "New Student: " << firstname << " " << lastname << "\nTheir ID is: " << id;
 	students.push_back(Student(firstname, lastname, id));
 	stuIDs.push_back(id);
 }
@@ -83,11 +88,56 @@ int Gradebook::randID() {
 	return 1000 + (rand() % 9001);
 }
 void Gradebook::addAssingment(string name, int points) {
+	cout << "\nNew Assignment: " << name;
 	assignments.push_back(Assingment(name, points));
+}
+void Gradebook::grade(string assignName, int stuID, int grade) {
+	int index = 0;
+	Assingment whichAssignment;
+	for (int i = 0; i < stuIDs.size(); i++) {
+		if (stuID == stuIDs[i])
+			index = i;
+	}
+	for (int j = 0; j < assignments.size(); j++){
+		if (assignName == assignments[j].getName())
+			whichAssignment = assignments[j];
+	}
+	if (grade <= whichAssignment.getPoints()){
+		int currGrade = students[index].getGrade();
+		students[index].setGrade(currGrade + grade);
+	} else {
+		cout << "That is way too many points, try again with a lower value\n";
+	}
+	
+}
+void Gradebook::grade(string assignName, string stuName, int grade) {
+	int index = 0;
+	Assingment whichAssignment;
+	//for (int i = 0; i < stuIDs.size(); i++) {
+	//	if (stuID == stuIDs[i])
+	//		index = i;
+	//}
+	for (int j = 0; j < assignments.size(); j++) {
+		if (assignName == assignments[j].getName())
+			whichAssignment = assignments[j];
+	}
+	if (grade <= whichAssignment.getPoints()) {
+		int currGrade = students[index].getGrade();
+		students[index].setGrade(currGrade + grade);
+	}
+	else {
+		cout << "That is way too many points, try again with a lower value\n";
+	}
+
 }
 
 #pragma endregion
 
 int main() {
-	cout << "hello World";
+	Gradebook *gradebook = new Gradebook();
+
+	gradebook->addStudent("John", "Smith");
+	gradebook->addAssingment("Unit 1 Test", 100);
+
+	gradebook->grade("Unit 1 Test", 1001, 100);
 }
