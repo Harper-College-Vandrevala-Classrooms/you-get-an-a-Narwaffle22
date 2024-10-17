@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <string>
 
 using namespace std;
 
@@ -70,6 +71,7 @@ public:
 	void addAssingment(string, int);
 	void grade(string, int, int);
 	void grade(string, string, int);
+	void dispGradebook();
 private:
 	vector<Student> students;
 	vector<int> stuIDs;
@@ -79,7 +81,7 @@ private:
 Gradebook::Gradebook() {}
 void Gradebook::addStudent(string firstname, string lastname) {
 	int id = randID();
-	cout << "New Student: " << firstname << " " << lastname << "\nTheir ID is: " << id;
+	cout << "\nNew Student: " << firstname << " " << lastname << "\nTheir ID is: " << id;
 	students.push_back(Student(firstname, lastname, id));
 	stuIDs.push_back(id);
 }
@@ -94,41 +96,68 @@ void Gradebook::addAssingment(string name, int points) {
 void Gradebook::grade(string assignName, int stuID, int grade) {
 	int index = 0;
 	Assingment whichAssignment;
-	for (int i = 0; i < stuIDs.size(); i++) {
-		if (stuID == stuIDs[i])
-			index = i;
-	}
-	for (int j = 0; j < assignments.size(); j++){
-		if (assignName == assignments[j].getName())
-			whichAssignment = assignments[j];
-	}
-	if (grade <= whichAssignment.getPoints()){
+	try {
+		for (int i = 0; i < stuIDs.size(); i++) {
+			if (stuID == stuIDs[i])
+				index = i;
+		}
+		for (int j = 0; j < assignments.size(); j++) {
+			if (assignName == assignments[j].getName())
+				whichAssignment = assignments[j];
+		}
+		if (grade > whichAssignment.getPoints())
+			throw "That is way too many points, try again with a lower value\n";
 		int currGrade = students[index].getGrade();
 		students[index].setGrade(currGrade + grade);
-	} else {
-		cout << "That is way too many points, try again with a lower value\n";
 	}
-	
+	catch (const char* msg) {
+		cout << msg << endl;
+	}
+	catch (...) {
+		cout << "Unexpected exception!" << endl;
+	}
 }
 void Gradebook::grade(string assignName, string stuName, int grade) {
 	int index = 0;
 	Assingment whichAssignment;
-	//for (int i = 0; i < stuIDs.size(); i++) {
-	//	if (stuID == stuIDs[i])
-	//		index = i;
-	//}
-	for (int j = 0; j < assignments.size(); j++) {
-		if (assignName == assignments[j].getName())
-			whichAssignment = assignments[j];
-	}
-	if (grade <= whichAssignment.getPoints()) {
+	bool isNotInList = true;
+	try {
+		for (int i = 0; i < students.size(); i++) {
+			if (students[i].getName().compare(stuName)) {
+				index = i;
+				isNotInList = false;
+			}
+		}
+		if (isNotInList)
+			throw "\nStudent Entered either does not exist or is formatted improperly\n";
+		for (int j = 0; j < assignments.size(); j++) {
+			if (assignName == assignments[j].getName())
+				whichAssignment = assignments[j];
+		}
+		if (grade > whichAssignment.getPoints())
+			throw "\nThat is way too many points, try again with a lower value\n";
 		int currGrade = students[index].getGrade();
 		students[index].setGrade(currGrade + grade);
 	}
-	else {
-		cout << "That is way too many points, try again with a lower value\n";
+	catch (const char* msg) {
+		cout << msg << endl;
 	}
-
+	catch (...) {
+		cout << "Unexpected exception!" << endl;
+	}
+}
+void Gradebook::dispGradebook() {
+	cout << "\n------ STUDENTS -----\n";
+	for (int i = 0; i < students.size(); i++) {
+		cout << students[i].getName() << "      ";
+		cout << students[i].getGrade() << "\n";
+	}
+	cout << "---------------------\n";
+	for (int j = 0; j < assignments.size(); j++) {
+		cout << assignments[j].getName() << "      ";
+		cout << assignments[j].getPoints() << "\n";
+	}
+	cout << "---------------------\n";
 }
 
 #pragma endregion
@@ -137,7 +166,13 @@ int main() {
 	Gradebook *gradebook = new Gradebook();
 
 	gradebook->addStudent("John", "Smith");
+	gradebook->addStudent("Jane", "Doe");
+	gradebook->addStudent("James", "Monroe");
 	gradebook->addAssingment("Unit 1 Test", 100);
+	gradebook->addAssingment("Unit 2 Test", 100);
+	gradebook->addAssingment("Unit 3 Test", 100);
 
-	gradebook->grade("Unit 1 Test", 1001, 100);
+	gradebook->grade("Unit 1 Test", "JohnSmith", 100);
+
+	gradebook->dispGradebook();
 }
