@@ -40,25 +40,25 @@ void Student::setGrade(int newGrade) {
 #pragma endregion
 
 #pragma region Assingment Class
-class Assingment {
+class Assignment {
 public:
-	Assingment(string, int);
-	Assingment();
+	Assignment(string, int);
+	Assignment();
 	string getName();
 	int getPoints();
 private:
 	string name;
 	int pntsPoss;
 };
-Assingment::Assingment(string name, int pntsPoss) {
+Assignment::Assignment(string name, int pntsPoss) {
 	this->name = name;
 	this->pntsPoss = pntsPoss;
 }
-Assingment::Assingment() {}
-string Assingment::getName() {
+Assignment::Assignment() {}
+string Assignment::getName() {
 	return name;
 }
-int Assingment::getPoints() {
+int Assignment::getPoints() {
 	return pntsPoss;
 }
 #pragma endregion
@@ -75,7 +75,7 @@ public:
 private:
 	vector<Student> students;
 	vector<int> stuIDs;
-	vector<Assingment> assignments;
+	vector<Assignment> assignments;
 	int randID();
 };
 Gradebook::Gradebook() {}
@@ -91,11 +91,11 @@ int Gradebook::randID() {
 }
 void Gradebook::addAssingment(string name, int points) {
 	cout << "\nNew Assignment: " << name;
-	assignments.push_back(Assingment(name, points));
+	assignments.push_back(Assignment(name, points));
 }
 void Gradebook::grade(string assignName, int stuID, int grade) {
 	int index = 0;
-	Assingment whichAssignment;
+	Assignment whichAssignment;
 	try {
 		for (int i = 0; i < stuIDs.size(); i++) {
 			if (stuID == stuIDs[i])
@@ -119,7 +119,7 @@ void Gradebook::grade(string assignName, int stuID, int grade) {
 }
 void Gradebook::grade(string assignName, string stuName, int grade) {
 	int index = 0;
-	Assingment whichAssignment;
+	Assignment whichAssignment;
 	bool isNotInList = true;
 	try {
 		for (int i = 0; i < students.size(); i++) {
@@ -159,12 +159,185 @@ void Gradebook::dispGradebook() {
 	}
 	cout << "---------------------\n";
 }
+#pragma endregion
+
+#pragma region Prompert Class
+class Prompter {
+public:
+	Prompter();
+	void startTheGradebook();
+private:
+	void addStudent();
+	void addAssignment();
+	void gradeStudent();
+	Gradebook* gradebook = new Gradebook();
+};
+Prompter::Prompter() {
+}
+void Prompter::startTheGradebook() {
+	string firstName, lastName;
+	int command;
+	bool inProgress = true;
+
+	cout << "+-------------------------------+" << "\n";
+	cout << "+    Welcome to The Grabook     +" << "\n";
+	cout << "+-------------------------------+" << "\n\n";
+	cout << "In order to start you must add a student?\n=> Please enter a student's first name: ";
+	getline(cin, firstName);
+	cout << "\nAwesome, and the last?\n=> Please enter a student's last name: ";
+	getline(cin, lastName);
+	gradebook->addStudent(firstName, lastName);
+
+	cout << "\n\n!Follow The Instructions to Navigate!\n" << endl;
+
+	cout << "[1] Add New Student" << endl;
+	cout << "[2] Add new Assignment" << endl;
+	cout << "[3] Grade a student's assignment" << endl;
+	cout << "[4] Show Gradebook" << endl;
+	cout << "[5] Exit" << endl;
+
+	cout << "SELECT Command: ";
+	cin >> command;
+
+	while (inProgress) {
+		switch (command) {
+		case 1: {
+			addStudent();
+			cout << "\n\n!Run it Back!\n" << endl;
+
+			cout << "[1] Add New Student" << endl;
+			cout << "[2] Add new Assignment" << endl;
+			cout << "[3] Grade a student's assignment" << endl;
+			cout << "[4] Show Gradebook" << endl;
+			cout << "[5] Exit" << endl;
+
+			cout << "SELECT Command: ";
+			cin >> command;
+			break;
+		}
+		case 2: {
+			addAssignment();
+			cout << "\n\n!Run it Back!\n" << endl;
+
+			cout << "[1] Add New Student" << endl;
+			cout << "[2] Add new Assignment" << endl;
+			cout << "[3] Grade a student's assignment" << endl;
+			cout << "[4] Show Gradebook" << endl;
+			cout << "[5] Exit" << endl;
+
+			cout << "SELECT Command: ";
+			cin >> command;
+			break;
+		}
+		case 3: {
+			gradeStudent();
+			cout << "\n\n!Run it Back!\n" << endl;
+
+			cout << "[1] Add New Student" << endl;
+			cout << "[2] Add new Assignment" << endl;
+			cout << "[3] Grade a student's assignment" << endl;
+			cout << "[4] Show Gradebook" << endl;
+			cout << "[5] Exit" << endl;
+
+			cout << "SELECT Command: ";
+			cin >> command;
+			break;
+		}
+		case 4: {
+			gradebook->dispGradebook();
+			cout << "\n\n!Run it Back!\n" << endl;
+
+			cout << "[1] Add New Student" << endl;
+			cout << "[2] Add new Assignment" << endl;
+			cout << "[3] Grade a student's assignment" << endl;
+			cout << "[4] Show Gradebook" << endl;
+			cout << "[5] Exit" << endl;
+
+			cout << "SELECT Command: ";
+			cin >> command;
+			break;
+		}
+		case 5: {
+			inProgress = false;
+			cout << "See ya!";
+			break;
+		}
+		}
+	}
+}
+void Prompter::addStudent() {
+	string firstName, lastName;
+	cin.ignore();
+	cout << "=> Please enter a student's first name: ";
+	getline(cin, firstName);
+	cout << "\n=> Please enter a student's last name: ";
+	getline(cin, lastName);
+	gradebook->addStudent(firstName, lastName);
+}
+void Prompter::addAssignment() {
+	string assignName, temp;
+	int pntsPoss;
+	bool isANum = false;
+	cin.ignore();
+	cout << "=> Please enter the name of the assignment: ";
+	getline(cin, assignName);
+	while (!isANum) {
+		cout << "\n=> Please the amount of points possible for the assignment: ";
+		getline(cin, temp);
+		isANum = true;
+		for (char c : temp) {
+			if (!isdigit(c)) {
+				isANum = false;
+			}
+		}
+	}
+	pntsPoss = stoi(temp);
+	gradebook->addAssingment(assignName, pntsPoss);
+}
+void Prompter::gradeStudent() {
+	string stuName, assName, temp, jemp;
+	int stuID, pnts;
+	bool isANum = true;
+	bool isANum2 = false;
+	cin.ignore();
+	cout << "=> Please enter the name or the ID of the student you want to grade: ";
+	getline(cin, temp);
+	for (char c : temp) {
+		if (!isdigit(c)) {
+			isANum = false;
+		}
+	}
+	stuName = temp;
+	cout << "\n=> Please enter the assignment you want to grade: ";
+	getline(cin, assName);
+	cin.ignore();
+	while (!isANum2) {
+		cout << "\n=> Please enter how many points the student earned: ";
+		getline(cin, jemp);
+		isANum2 = true;
+		for (char c : jemp) {
+			if (!isdigit(c)) {
+				isANum2 = false;
+			}
+		}
+	}
+	pnts = stoi(jemp);
+	if (isANum) {
+		stuID = stoi(temp);
+		gradebook->grade(assName, stuID, pnts);
+	} else {
+		gradebook->grade(assName, stuName, pnts);
+	}
+}
 
 #pragma endregion
 
 int main() {
 	Gradebook *gradebook = new Gradebook();
+	Prompter* prompt = new Prompter();
+	prompt->startTheGradebook();
 
+	/*
 	gradebook->addStudent("John", "Smith");
 	gradebook->addStudent("Jane", "Doe");
 	gradebook->addStudent("James", "Monroe");
@@ -174,5 +347,5 @@ int main() {
 
 	gradebook->grade("Unit 1 Test", "JohnSmith", 100);
 
-	gradebook->dispGradebook();
+	gradebook->dispGradebook();*/
 }
